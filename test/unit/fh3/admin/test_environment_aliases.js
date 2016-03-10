@@ -1,60 +1,63 @@
 var assert = require('assert');
-var createCommand = require('cmd/fh3/admin/environments/alias/create');
-console.log(process.version);
-console.log(createCommand);
-console.log(require.resolve('cmd/fh3/admin/environments/alias/create'));
+var fhcSetup = require('test/helpers/fhcSetup');
 
-var nockEnvironmentAliases = require('test/fixtures/admin/fixture_environment_aliases');
-var genericCommand = require('genericCommand');
-var adminenvironmentaliases = {
-  read : genericCommand(require('cmd/fh3/admin/environments/alias/read')),
-  create : genericCommand(createCommand),
-  update : genericCommand(require('cmd/fh3/admin/environments/alias/update')),
-  delete : genericCommand(require('cmd/fh3/admin/environments/alias/delete')),
-  list : genericCommand(require('cmd/fh3/admin/environments/alias/list'))
-};
+describe('test environment aliases', function () {
+  before(function (done) {
+    fhcSetup(function (err) {
+      if (err) {
+        return done(err);
+      }
+      var genericCommand = require('genericCommand');
+      this.adminenvironmentaliases = {
+        read : genericCommand(require('cmd/fh3/admin/environments/alias/read')),
+        create : genericCommand(require('cmd/fh3/admin/environments/alias/create')),
+        update : genericCommand(require('cmd/fh3/admin/environments/alias/update')),
+        delete : genericCommand(require('cmd/fh3/admin/environments/alias/delete')),
+        list : genericCommand(require('cmd/fh3/admin/environments/alias/list'))
+      };
 
-module.exports = {
-  setUp : function(done){
-    return done();
-  },
-  'test admin-environment-aliases list': function(done) {
-    adminenvironmentaliases.list({_ : []}, function (err, data){
+      this.nockEnvironmentAliases = require('test/fixtures/admin/fixture_environment_aliases');
+    });
+  });
+
+  it('test admin-environment-aliases list', function(done) {
+    this.adminenvironmentaliases.list({_ : []}, function (err, data){
       assert.equal(err, null);
       assert.equal(data.length, 1);
       assert.equal(data[0].environmentId, 'dev');
       assert.equal(data[0].environmentIdAlias, 'myDev');
       return done();
     });
-  },
-  'test admin-environment-aliases read': function(done) {
-    adminenvironmentaliases.read({ id : '1a'}, function (err, data){
+  });
+  it('test admin-environment-aliases read', function(done) {
+    this.adminenvironmentaliases.read({ id : '1a'}, function (err, data){
       assert.equal(err, null);
       assert.equal(data.environmentId, 'dev');
       return done();
     });
-  },
-  'test admin-environment-aliases create': function(done) {
-    adminenvironmentaliases.create({ environment : 'dev', environmentAlias : 'myDev', environmentLabelAlias : 'My Dev' }, function (err, data){
+  });
+  it('test admin-environment-aliases create', function(done) {
+    this.adminenvironmentaliases.create({ environment : 'dev', environmentAlias : 'myDev', environmentLabelAlias : 'My Dev' }, function (err, data){
       assert.equal(err, null);
       assert.equal(data.environmentLabelAlias, 'My Dev');
       return done();
     });
-  },
-  'test admin-environment-aliases update': function(done) {
-    adminenvironmentaliases.update( { id : '1a', environmentLabelAlias : 'My Dev 2'}, function (err){
+  });
+  it('test admin-environment-aliases update', function(done) {
+    this.adminenvironmentaliases.update( { id : '1a', environmentLabelAlias : 'My Dev 2'}, function (err){
       assert.equal(err, null);
       return done();
     });
-  },
-  'test admin-environment-aliases delete': function(done) {  
-    adminenvironmentaliases.delete({id : '1a'}, function (err){
+  });
+  it('test admin-environment-aliases delete', function(done) {  
+    this.adminenvironmentaliases.delete({id : '1a'}, function (err){
       assert.equal(err, null);
       return done();
     });
-  },
-  tearDown : function(done){
-    nockEnvironmentAliases.done();
-    return done();
-  }
-};
+  });
+
+
+  after(function(done){
+    this.nockEnvironmentAliases.done();
+  });
+});

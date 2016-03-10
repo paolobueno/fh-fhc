@@ -14,8 +14,8 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    _test_runner: './node_modules/.bin/mocha',
-    _unit_args: '--setUp ./test/setupTeardown.js --tearDown ./test/setupTeardown.js test/unit',
+    _test_runner: './node_modules/.bin/_mocha',
+    _unit_args: 'test/setupTeardown.js test/unit',
     _accept_args: 'test/accept/*',
     unit: ['env NODE_PATH=.:./lib <%= _test_runner %> <%= _unit_args %>/fh3/**/*',
       'env NODE_PATH=.:./lib <%= _test_runner %> <%= _unit_args %>/common/*',
